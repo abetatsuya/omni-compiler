@@ -100,7 +100,7 @@ public class OMPDDRDrewriteExpr
 				sizeExprs[k] = ts.getFarraySizeExpr()[k];
 			    }
 			    sizeExprs[motolen] = Xcons.FindexRange(Xcons.IntConstant(0),
-								   Xcons.IntConstant(OMPDDRD.DDRD_NUM_THREADS-1));
+								   Xcons.IntConstant(OMPtranslate.DDRD_NUM_THREADS-1));
 			    Xtype sizeArrayType = Xtype.Farray(Xtype.FintType, sizeExprs);
 			    Ident id = Ident.Fident("ddrd"+kind+"_"+xx.getName(), sizeArrayType, false, true, null);
 			    i.setXobject(id.Ref());
@@ -179,7 +179,7 @@ public class OMPDDRDrewriteExpr
 
 					Xobject condExpr = Xcons.FlogicalConstant(false);
 					Xobject write_st = Xcons.List(Xcode.F_STOP_STATEMENT);
-					for(int k = 0; k < OMPDDRD.DDRD_NUM_THREADS; k++) {
+					for(int k = 0; k < OMPtranslate.DDRD_NUM_THREADS; k++) {
 					    Xobject tmp_if_rd = tmp0.copy();
 					    Xobject tmp_if_wr = tmp0.copy();
 					    Xobject tmp_clock = Xcons.FarrayRef(myclock.Ref(),
@@ -271,7 +271,7 @@ public class OMPDDRDrewriteExpr
 
 					Xobject condExpr = Xcons.FlogicalConstant(false);
 					Xobject write_st = Xcons.List(Xcode.F_STOP_STATEMENT);
-					for(int k = 0; k < OMPDDRD.DDRD_NUM_THREADS; k++) {
+					for(int k = 0; k < OMPtranslate.DDRD_NUM_THREADS; k++) {
 					    Xobject tmp_if_wr = tmp0.copy();
 					    Xobject tmp_clock = Xcons.FarrayRef(myclock.Ref(),
 										omp_get_thread_num,
@@ -349,8 +349,8 @@ public class OMPDDRDrewriteExpr
 			}
 		    }
 
-		    for(int k = 0; k < OMPDDRD.DDRD_NUM_THREADS; k++) {
-			for(int l = 0; l < OMPDDRD.DDRD_NUM_THREADS; l++) {
+		    for(int k = 0; k < OMPtranslate.DDRD_NUM_THREADS; k++) {
+			for(int l = 0; l < OMPtranslate.DDRD_NUM_THREADS; l++) {
 			    XobjList st = Xcons.List(Xcode.F_ASSIGN_STATEMENT,
 						     Xcons.FarrayRef(myclock.Ref(),
 								     Xcons.IntConstant(k),

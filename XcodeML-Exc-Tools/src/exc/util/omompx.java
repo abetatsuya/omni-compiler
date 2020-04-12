@@ -9,7 +9,6 @@ import exc.openacc.AccDevice;
 import exc.openacc.AccTranslator;
 import exc.openmp.OMP;
 import exc.openmp.OMPtranslate;
-import exc.openmp.OMPDDRD;
 import exc.xcalablemp.XMP;
 import exc.xcalablemp.XMPglobalDecl;
 import exc.xcalablemp.XMPtranslate;
@@ -155,9 +154,10 @@ public class omompx
         XmOption.setIsSuppressLineDirective(true);
       } else if(arg.equals("-ompf-dynamic-data-race-detect")) {
         ompf_dynamic_data_race_detect = true;
+        exc.openmp.OMPtranslate.ompf_dynamic_data_race_detect = true;
       } else if (arg.startsWith("-ompf-dynamic-data-race-detect-max-num-threads=")) {
 	  String n = arg.substring(47);
-	  exc.openmp.OMPDDRD.DDRD_NUM_THREADS = Integer.parseInt(n);
+	  exc.openmp.OMPtranslate.DDRD_NUM_THREADS = Integer.parseInt(n);
       } else if(arg.equals("-fopenmp")) {
         openMP = true;
       } else if(arg.equals("-fopenmp-only-target")) {
@@ -467,22 +467,6 @@ public class omompx
       }
     }
 
-    // OpenMP translation
-    if(ompf_dynamic_data_race_detect) {
-      OMPDDRD omp_translator = new OMPDDRD(xobjFile);
-      xobjFile.iterateDef(omp_translator);
-            
-      if(OMP.hasErrors())
-        System.exit(1);
-            
-      omp_translator.finish();
-            
-      if(xcodeWriter != null) {
-        xobjFile.Output(xcodeWriter);
-        xcodeWriter.flush();
-      }
-    } else {
-
     if(openMP || openMPonlyTarget) {
       if(openMPonlyTarget)
         xobjFile.addHeaderLine("#include \"ompc_target.h\"");
@@ -499,8 +483,6 @@ public class omompx
         xobjFile.Output(xcodeWriter);
         xcodeWriter.flush();
       }
-    }
-
     }
 
     if(openACC){

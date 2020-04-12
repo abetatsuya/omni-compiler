@@ -19,6 +19,11 @@ public class OMPtranslate implements XobjectDefVisitor
     OMPrewriteExpr rewriteExpr = new OMPrewriteExpr();
     OMPtransPragma transPragma = new OMPtransPragma();
     
+    /* DDRD extension */
+    public       static int DDRD_NUM_THREADS     = 2; /* default */
+    public       static boolean ompf_dynamic_data_race_detect = false;
+    OMPDDRDrewriteExpr ddrd_rewriteExpr = new OMPDDRDrewriteExpr();
+
     public OMPtranslate()
     {
     }
@@ -84,8 +89,10 @@ public class OMPtranslate implements XobjectDefVisitor
         } else {
             Xtype ft = d.getFuncType();
             if(ft != null && ft.isFprogram()) {
+		if(!ompf_dynamic_data_race_detect) {
                 ft.setIsFprogram(false);
                 replace_main(d);
+		}
             }
         }
         
@@ -109,12 +116,18 @@ public class OMPtranslate implements XobjectDefVisitor
 
         OMP.debug("4");
 
-        rewriteExpr.run(fd, anaDecl);
+	if(!ompf_dynamic_data_race_detect) {
+	    rewriteExpr.run(fd, anaDecl);
+	} else {
+	    ddrd_rewriteExpr.run(fd, anaDecl);
+	}
         if(OMP.hasError())
             return;
         OMP.debug("5");
 
-        transPragma.run(fd);
+	if(!ompf_dynamic_data_race_detect) {
+	    transPragma.run(fd);
+	}
         if(OMP.hasError())
             return;
         
